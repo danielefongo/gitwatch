@@ -2,6 +2,9 @@
 
 update="N"
 
+git fetch
+lastRemote=""
+
 while true; do
 
   git fetch
@@ -10,11 +13,10 @@ while true; do
   REMOTE=$(git rev-parse "$UPSTREAM")
   BASE=$(git merge-base @ "$UPSTREAM")
 
-  if [ $LOCAL = $REMOTE ]; then
-    update="N"
-  elif [ $LOCAL = $BASE ]; then
-    if [[ $update = "N" ]]; then
+  if [ $LOCAL != $REMOTE ] && [ $LOCAL = $BASE ]; then
+    if [[ $lastRemote != "$REMOTE" ]]; then
       osascript -e 'display notification "Remote branch updated" with title "GitWatch Daemon"'
+      lastRemote="$REMOTE"
       update="Y"
     fi
   else
